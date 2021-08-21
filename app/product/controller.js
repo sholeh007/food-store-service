@@ -8,7 +8,7 @@ async function store(req, res, next) {
     await product.save();
     return res.status(200).json(product);
   } catch (err) {
-    if (err & (err.name === "ValidationError")) {
+    if (err.name === "ValidationError") {
       return res.json({
         error: 1,
         message: err.message,

@@ -3,6 +3,15 @@ const path = require("path");
 const config = require("../config");
 const Product = require("./model");
 
+async function index(req, res, next) {
+  try {
+    const products = await Product.find();
+    return res.status(200).json(products);
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function store(req, res, next) {
   try {
     const payload = req.body;
@@ -60,5 +69,6 @@ async function store(req, res, next) {
 }
 
 module.exports = {
+  index,
   store,
 };

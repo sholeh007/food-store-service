@@ -92,7 +92,7 @@ async function update(req, res, next) {
 
       src.on("end", async () => {
         try {
-          const product = await Product.findOne({ _id: req.params.id });
+          const product = await Product.findById({ _id: req.params.id });
           const currentImg = `${config.rootPath}/public/images/${product.image_url}`;
 
           if (fs.existsSync(currentImg)) {

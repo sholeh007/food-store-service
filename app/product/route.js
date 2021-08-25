@@ -10,7 +10,7 @@ router.post(
   productController.store
 );
 router.put(
-  "/products:id",
+  "/products/:id",
   multer({ dest: os.tmpdir() }).single("image"),
   productController.update
 );

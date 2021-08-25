@@ -71,7 +71,76 @@ async function store(req, res, next) {
   }
 }
 
+async function update(req, res, next) {
+  try {
+    const payload = req.body;
+
+    if (req.file) {
+      const tmp_path = req.file.path;
+      const originalExt =
+        req.file.originalname.split(".")[
+          req.file.originalname.split(".").length - 1
+        ];
+      const fileName = req.file.filename + "." + originalExt;
+      const target_path = path.resolve(
+        config.rootPath,
+        `public/images/${fileName}`
+      );
+      const src = fs.createReadStream(tmp_path);
+      const dest = fs.createWriteStream(target_path);
+      src.pipe(dest);
+
+      src.on("end", async () => {
+        try {
+          const product = await Product.findOne({ _id: req.params.id });
+          const currentImg = `${config.rootPath}/public/images/${product.image_url}`;
+
+          if (fs.existsSync(currentImg)) {
+            fs.unlinkSync(currentImg);
+          }
+          const products = await Product.findOneAndUpdate(
+            { _id: req.params.id },
+            { ...payload, image_url: fileName },
+            { new: true, runValidators: true }
+          );
+          return res.status(200).json(products);
+        } catch (err) {
+          fs.unlinkSync(target_path);
+          if (err.name === "ValidationError") {
+            return res.json({
+              error: 1,
+              message: err.message,
+              fields: err.errors,
+            });
+          }
+          next(err);
+        }
+      });
+      src.on("error", async () => {
+        next(err);
+      });
+    } else {
+      const product = await Product.findOneAndUpdate(
+        { _id: req.params.id },
+        payload,
+        { new: true, runValidators: true }
+      );
+      return res.status(200).json(product);
+    }
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.json({
+        error: 1,
+        message: err.message,
+        fields: err.errors,
+      });
+    }
+    next(err);
+  }
+}
+
 module.exports = {
   index,
   store,
+  update,
 };

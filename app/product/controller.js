@@ -5,7 +5,10 @@ const Product = require("./model");
 
 async function index(req, res, next) {
   try {
-    const products = await Product.find();
+    const { limit = 10, skip = 0 } = req.query;
+    const products = await Product.find()
+      .limit(parseInt(limit))
+      .skip(parseInt(skip));
     return res.status(200).json(products);
   } catch (error) {
     next(error);

@@ -14,5 +14,6 @@ router.put(
   multer({ dest: os.tmpdir() }).single("image"),
   productController.update
 );
+router.delete("/products/:id", productController.destroy);
 
 module.exports = router;

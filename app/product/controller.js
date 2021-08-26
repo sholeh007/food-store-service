@@ -92,14 +92,14 @@ async function update(req, res, next) {
 
       src.on("end", async () => {
         try {
-          const product = await Product.findById({ _id: req.params.id });
+          const product = await Product.findById(req.params.id);
           const currentImg = `${config.rootPath}/public/images/${product.image_url}`;
 
           if (fs.existsSync(currentImg)) {
             fs.unlinkSync(currentImg);
           }
-          const products = await Product.findOneAndUpdate(
-            { _id: req.params.id },
+          const products = await Product.findByIdAndUpdate(
+            req.params.id,
             { ...payload, image_url: fileName },
             { new: true, runValidators: true }
           );
@@ -139,8 +139,23 @@ async function update(req, res, next) {
   }
 }
 
+async function destroy(req, res, next) {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    const curretImg = `${config.rootPath}/public/images/${product.image_url}`;
+
+    if (fs.existsSync(curretImg)) {
+      fs.unlinkSync(curretImg);
+    }
+    return res.status(200).json(product);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   index,
   store,
   update,
+  destroy,
 };

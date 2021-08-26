@@ -21,6 +21,30 @@ async function store(req, res, next) {
   }
 }
 
+async function update(req, res, next) {
+  try {
+    const payload = req.body;
+
+    const category = await Category.findByIdAndUpdate(req.params.id, payload, {
+      new: true,
+      runValidators: true,
+    });
+
+    return res.status(200).json(category);
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.json({
+        error: 1,
+        message: error.message,
+        fields: error.errors,
+      });
+    }
+
+    next(error);
+  }
+}
+
 module.exports = {
   store,
+  update,
 };

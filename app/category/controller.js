@@ -44,7 +44,18 @@ async function update(req, res, next) {
   }
 }
 
+async function destroy(req, res, next) {
+  try {
+    const category = await Category.findByIdAndDelete(req.params.id);
+
+    return res.status(200).json(category);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   store,
   update,
+  destroy,
 };

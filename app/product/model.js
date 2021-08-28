@@ -18,6 +18,10 @@ const productSchema = new Schema(
       default: 0,
     },
     image_url: String,
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "category",
+    },
   },
   {
     timestamps: true,

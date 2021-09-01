@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const { model, Schema } = mongoose;
 
-const productSchema = new Schema(
+const productSchema = Schema(
   {
     name: {
       type: String,
@@ -20,7 +20,7 @@ const productSchema = new Schema(
     image_url: String,
     category: {
       type: Schema.Types.ObjectId,
-      ref: "category",
+      ref: "Category",
     },
   },
   {
@@ -28,4 +28,4 @@ const productSchema = new Schema(
   }
 );
 
-module.exports = model("product", productSchema);
+module.exports = model("Product", productSchema);

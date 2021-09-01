@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const config = require("../config");
 const Product = require("./model");
+const Category = require("../category/model");
 
 async function index(req, res, next) {
   try {
@@ -18,6 +19,18 @@ async function index(req, res, next) {
 async function store(req, res, next) {
   try {
     const payload = req.body;
+
+    if (payload.category) {
+      const category = await Category.findOne({
+        name: { $regex: payload.category, $options: "i" },
+      });
+
+      if (category) {
+        payload = { ...payload, category: category._id };
+      } else {
+        delete payload.category;
+      }
+    }
 
     if (req.file) {
       const tmp_path = req.file.path;
@@ -74,6 +87,18 @@ async function store(req, res, next) {
 async function update(req, res, next) {
   try {
     const payload = req.body;
+
+    if (payload.category) {
+      const category = await Category.findOne({
+        name: { $regex: payload.category, $options: "i" },
+      });
+
+      if (category) {
+        payload = { ...payload, category: category._id };
+      } else {
+        delete payload.category;
+      }
+    }
 
     if (req.file) {
       const tmp_path = req.file.path;

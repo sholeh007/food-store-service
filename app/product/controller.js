@@ -107,6 +107,13 @@ async function update(req, res, next) {
       }
     }
 
+    if (payload.tags && payload.tags.length) {
+      const tags = await Tag.find({ nama: { $in: payload.tags } });
+      if (tags.length) {
+        payload = { ...payload, tags: tags.map((tag) => tag._id) };
+      }
+    }
+
     if (req.file) {
       const tmp_path = req.file.path;
       const originalExt =

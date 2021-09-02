@@ -10,7 +10,9 @@ async function index(req, res, next) {
     const { limit = 10, skip = 0 } = req.query;
     const products = await Product.find()
       .limit(parseInt(limit))
-      .skip(parseInt(skip));
+      .skip(parseInt(skip))
+      .populate("category")
+      .populate("tag");
     return res.status(200).json(products);
   } catch (error) {
     next(error);
@@ -26,10 +28,11 @@ async function store(req, res, next) {
         name: { $regex: payload.category, $options: "i" },
       });
 
-      if (!category) {
+      if (category) {
+        payload = { ...payload, category: category._id };
+      } else {
         delete payload.category;
       }
-      payload = { ...payload, category: category._id };
     }
 
     if (payload.tags && payload.tags.length) {

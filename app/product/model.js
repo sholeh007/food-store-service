@@ -18,10 +18,12 @@ const productSchema = Schema(
       default: 0,
     },
     image_url: String,
+    // relasi one to one
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
     },
+    // relasi one to many
     tag: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
   },
   {

@@ -3,6 +3,7 @@ const path = require("path");
 const config = require("../config");
 const Product = require("./model");
 const Category = require("../category/model");
+const Tag = require("../tag/model");
 
 async function index(req, res, next) {
   try {
@@ -25,10 +26,16 @@ async function store(req, res, next) {
         name: { $regex: payload.category, $options: "i" },
       });
 
-      if (category) {
-        payload = { ...payload, category: category._id };
-      } else {
+      if (!category) {
         delete payload.category;
+      }
+      payload = { ...payload, category: category._id };
+    }
+
+    if (payload.tags && payload.tags.length) {
+      const tags = await Tag.find({ nama: { $in: payload.tags } });
+      if (tags.length) {
+        payload = { ...payload, tags: tags.map((tag) => tag._id) };
       }
     }
 

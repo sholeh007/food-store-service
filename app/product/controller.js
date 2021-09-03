@@ -7,8 +7,15 @@ const Tag = require("../tag/model");
 
 async function index(req, res, next) {
   try {
-    const { limit = 10, skip = 0 } = req.query;
-    const products = await Product.find()
+    const { limit = 10, skip = 0, q = "" } = req.query;
+    let criteria = {};
+
+    // filter
+    if (q.length) {
+      criteria = { name: { $regex: `${q}`, $options: "i" } };
+    }
+
+    const products = await Product.find(criteria)
       .limit(parseInt(limit))
       .skip(parseInt(skip))
       .populate("category")

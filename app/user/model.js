@@ -33,8 +33,6 @@ const userSchema = new Schema(
   }
 );
 
-module.exports = model("User", userSchema);
-
 userSchema.path("email").validate(
   (value) => {
     const EMAIL_RE = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -55,3 +53,5 @@ userSchema.path("email").validate(
   },
   (err) => `${err.value} sudah terdaftar`
 );
+
+module.exports = model("User", userSchema);

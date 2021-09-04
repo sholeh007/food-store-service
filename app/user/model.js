@@ -34,3 +34,11 @@ const userSchema = new Schema(
 );
 
 module.exports = model("User", userSchema);
+
+userSchema.path("email").validate(
+  (value) => {
+    const EMAIL_RE = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+    return EMAIL_RE.test(value);
+  },
+  (err) => `email ${err.value} tidak valid`
+);

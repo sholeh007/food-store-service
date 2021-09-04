@@ -42,3 +42,16 @@ userSchema.path("email").validate(
   },
   (err) => `email ${err.value} tidak valid`
 );
+
+userSchema.path("email").validate(
+  async function (value) {
+    try {
+      const count = await this.model("User").count({ email: value });
+
+      return !count;
+    } catch (error) {
+      throw error;
+    }
+  },
+  (err) => `${err.value} sudah terdaftar`
+);

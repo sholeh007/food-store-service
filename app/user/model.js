@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const { Schema, model } = mongoose;
 const saltRounds = 10;
@@ -34,6 +35,8 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+
+userSchema.plugin(AutoIncrement, { inc_field: "id" });
 
 userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, saltRounds);

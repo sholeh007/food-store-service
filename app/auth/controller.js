@@ -26,22 +26,21 @@ async function register(req, res, next) {
 
 async function localStrategy(email, password, done) {
   try {
+    // method select abaikan field yang ada tanda "-"
     const user = await User.findOne({ email }).select(
-      "__V -createdAt -updateAt -cart_items -token"
+      "-__V -createdAt -updatedAt -cart_items -token"
     );
-
     if (!user) {
       return done();
     }
 
     const match = await bcrypt.compare(password, user.password);
-
     if (!match) {
-      return done();
+      done();
     }
 
     // berikan data user tanpa password
-    ({ password, ...userWithoutPassword } = user.toJson());
+    ({ password, ...userWithoutPassword } = user.toJSON());
 
     return done(null, userWithoutPassword);
   } catch (error) {
@@ -62,7 +61,7 @@ async function login(req, res, next) {
     }
 
     const signed = jwt.sign(user, config.secretKey);
-    await User.findOne(
+    await User.findOneAndUpdate(
       { _id: user._id },
       { $push: { token: signed } },
       { new: true }

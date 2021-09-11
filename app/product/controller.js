@@ -231,7 +231,7 @@ async function update(req, res, next) {
 async function destroy(req, res, next) {
   try {
     const policy = policyFor(req.user);
-    if (!policy.can("create", "Product")) {
+    if (!policy.can("delete", "Product")) {
       return res.json({
         error: 1,
         message: "Anda tidak memliki akses",

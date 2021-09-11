@@ -6,7 +6,7 @@ async function store(req, res, next) {
     const payload = req.body;
     const policy = policyFor(req.user);
 
-    if (!policy.can("create", "Product")) {
+    if (!policy.can("create", "Category")) {
       return res.json({
         error: 1,
         message: "Anda tidak memliki akses",
@@ -34,7 +34,7 @@ async function update(req, res, next) {
   try {
     const payload = req.body;
     const policy = policyFor(req.user);
-    if (!policy.can("create", "Product")) {
+    if (!policy.can("update", "Category")) {
       return res.json({
         error: 1,
         message: "Anda tidak memliki akses",
@@ -63,7 +63,7 @@ async function update(req, res, next) {
 async function destroy(req, res, next) {
   try {
     const policy = policyFor(req.user);
-    if (!policy.can("create", "Product")) {
+    if (!policy.can("delete", "Category")) {
       return res.json({
         error: 1,
         message: "Anda tidak memliki akses",

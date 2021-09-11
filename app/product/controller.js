@@ -4,6 +4,7 @@ const config = require("../config");
 const Product = require("./model");
 const Category = require("../category/model");
 const Tag = require("../tag/model");
+const { policyFor } = require("../policy/index");
 
 async function index(req, res, next) {
   try {
@@ -51,7 +52,15 @@ async function index(req, res, next) {
 
 async function store(req, res, next) {
   try {
+    const policy = policyFor(req.user);
     const payload = req.body;
+
+    if (!policy.can("create", "Product")) {
+      return res.json({
+        error: 1,
+        message: "Anda tidak memliki akses",
+      });
+    }
 
     if (payload.category) {
       const category = await Category.findOne({
@@ -127,6 +136,14 @@ async function store(req, res, next) {
 async function update(req, res, next) {
   try {
     const payload = req.body;
+    const policy = policyFor(req.user);
+
+    if (!policy.can("update", "Product")) {
+      return res.json({
+        error: 1,
+        message: "Anda tidak memliki akses",
+      });
+    }
 
     if (payload.category) {
       const category = await Category.findOne({
@@ -213,6 +230,14 @@ async function update(req, res, next) {
 
 async function destroy(req, res, next) {
   try {
+    const policy = policyFor(req.user);
+    if (!policy.can("create", "Product")) {
+      return res.json({
+        error: 1,
+        message: "Anda tidak memliki akses",
+      });
+    }
+
     const product = await Product.findByIdAndDelete(req.params.id);
     const curretImg = `${config.rootPath}/public/images/${product.image_url}`;
 

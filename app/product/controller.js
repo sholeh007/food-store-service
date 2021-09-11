@@ -39,12 +39,13 @@ async function index(req, res, next) {
       criteria = { ...criteria, tags: { $in: tags.map((tag) => tag._id) } };
     }
 
+    const count = await Product.find(criteria).countDocuments();
     const products = await Product.find(criteria)
       .limit(parseInt(limit))
       .skip(parseInt(skip))
       .populate("category")
       .populate("tag");
-    return res.status(200).json(products);
+    return res.status(200).json({ data: products, count });
   } catch (error) {
     next(error);
   }

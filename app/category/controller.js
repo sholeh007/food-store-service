@@ -1,8 +1,17 @@
 const Category = require("./model");
+const { policyFor } = require("../policy/index");
 
 async function store(req, res, next) {
   try {
     const payload = req.body;
+    const policy = policyFor(req.user);
+
+    if (!policy.can("create", "Product")) {
+      return res.json({
+        error: 1,
+        message: "Anda tidak memliki akses",
+      });
+    }
 
     const category = new Category(payload);
     await category.save();
@@ -24,6 +33,13 @@ async function store(req, res, next) {
 async function update(req, res, next) {
   try {
     const payload = req.body;
+    const policy = policyFor(req.user);
+    if (!policy.can("create", "Product")) {
+      return res.json({
+        error: 1,
+        message: "Anda tidak memliki akses",
+      });
+    }
 
     const category = await Category.findByIdAndUpdate(req.params.id, payload, {
       new: true,
@@ -46,6 +62,13 @@ async function update(req, res, next) {
 
 async function destroy(req, res, next) {
   try {
+    const policy = policyFor(req.user);
+    if (!policy.can("create", "Product")) {
+      return res.json({
+        error: 1,
+        message: "Anda tidak memliki akses",
+      });
+    }
     const category = await Category.findByIdAndDelete(req.params.id);
 
     return res.status(200).json(category);

@@ -55,8 +55,29 @@ async function getKecamatan(req, res, next) {
     });
   }
 }
+
+async function getDesa(req, res, next) {
+  const db_desa = path.resolve(__dirname, "./data/villages.csv");
+  try {
+    const { kode_induk } = req.query;
+    const data = await csv().fromFile(db_desa);
+
+    if (!kode_induk) return res.json(data);
+
+    const desa = data.filter((desa) => desa.kode_kecamtan === kode_induk);
+
+    return res.status(200).json(desa);
+  } catch (err) {
+    return res.json({
+      error: 1,
+      message: "Tidak dapat mengambil data desa",
+    });
+  }
+}
+
 module.exports = {
   getProvinsi,
   getKabupaten,
   getKecamatan,
+  getDesa,
 };

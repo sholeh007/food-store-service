@@ -35,7 +35,28 @@ async function getKabupaten(req, res, next) {
   }
 }
 
+async function getKecamatan(req, res, next) {
+  const db_kecamatan = path.resolve(__dirname, "./data/districts.csv");
+  try {
+    const { kode_induk } = req.query;
+    const data = await csv().fromFile(db_kecamatan);
+
+    if (!kode_induk) return res.json(data);
+
+    const distrik = data.filter(
+      (distrik) => distrik.kode_kabupaten === kode_induk
+    );
+
+    return res.status(200).json(distrik);
+  } catch (err) {
+    return res.json({
+      error: 1,
+      message: "Tidak dapat mengambil data kecamatan",
+    });
+  }
+}
 module.exports = {
   getProvinsi,
   getKabupaten,
+  getKecamatan,
 };

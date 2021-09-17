@@ -70,7 +70,39 @@ async function update(req, res, next) {
   }
 }
 
+async function destroy(req, res, next) {
+  const policy = policyFor(req.user);
+
+  try {
+    const { id } = req.params;
+
+    const address = await DeliveryAddress.findById(id);
+    const subjectAddress = subject({ ...address, user: address.user });
+
+    if (!policy.can("delete", subjectAddress)) {
+      return res.json({
+        error: 1,
+        message: `You're not allowed to delete this resource`,
+      });
+    }
+
+    await DeliveryAddress.findByIdAndDelete(id);
+
+    return res.json(address);
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.json({
+        error: 1,
+        message: err.message,
+        fields: err.errors,
+      });
+    }
+    next(err);
+  }
+}
+
 module.exports = {
   store,
   update,
+  destroy,
 };

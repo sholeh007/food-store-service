@@ -2,6 +2,39 @@ const DeliveryAddress = require("./model");
 const { subject } = require("@casl/ability");
 const { policyFor } = require("../policy");
 
+async function index(req, res, next) {
+  const policy = policyFor(req.user);
+
+  if (!policy.can("view", "DeliveryAddress")) {
+    return res.json({
+      error: 1,
+      message: `You're not allowed to perform this action`,
+    });
+  }
+
+  try {
+    const { limit = 10, skip = 0 } = req.query;
+    const count = await DeliveryAddress.find({
+      user: req.user._id,
+    }).countDocument();
+    const deliveryAddress = await DeliveryAddress.find({ user: req.user._id })
+      .limit(parseInt(limit))
+      .skip(parseInt(skip))
+      .sort("-createdAt");
+
+    return res.json({ data: deliveryAddress, count });
+  } catch (err) {
+    if (err.name == "ValidationError") {
+      return res.json({
+        error: 1,
+        message: err.message,
+        fields: err.errors,
+      });
+    }
+    next(err);
+  }
+}
+
 async function store(req, res, next) {
   const policy = policyFor(req.user);
 
@@ -105,4 +138,5 @@ module.exports = {
   store,
   update,
   destroy,
+  index,
 };

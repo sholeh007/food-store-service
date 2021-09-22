@@ -2,6 +2,34 @@ const Product = require("../product/model");
 const CartItem = require("../cart-item/model");
 const { policyFor } = require("../policy");
 
+async function index(req, res, next) {
+  const policy = policyFor(req.user);
+
+  if (!policy.can("read", "Cart")) {
+    return res.json({
+      error: 1,
+      message: `You're not allowed to perform this action`,
+    });
+  }
+
+  try {
+    const items = await CartItem.find({ user: req.user._id }).populate(
+      "product"
+    );
+
+    return res.status(200).json(items);
+  } catch (err) {
+    if (err.name == "ValidationError") {
+      return res.json({
+        error: 1,
+        message: err.message,
+        fields: err.errors,
+      });
+    }
+    next(err);
+  }
+}
+
 async function update(req, res, next) {
   const policy = policyFor(req.user);
 
@@ -60,5 +88,6 @@ async function update(req, res, next) {
 }
 
 module.exports = {
+  index,
   update,
 };

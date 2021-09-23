@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const { Schema, model } = mongoose;
 
@@ -28,5 +29,8 @@ const orderSchema = new Schema(
   },
   { timestamps: true }
 );
+
+// automatis dibuat field order_number oleh plugin AutoIncrement
+orderSchema.plugin(AutoIncrement, { inc_field: "order_number" });
 
 module.exports = model("Order", orderSchema);

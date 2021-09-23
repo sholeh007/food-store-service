@@ -33,4 +33,15 @@ const orderSchema = new Schema(
 // automatis dibuat field order_number oleh plugin AutoIncrement
 orderSchema.plugin(AutoIncrement, { inc_field: "order_number" });
 
+// create virtual field only in mongoose not mongodb
+const virtual = orderSchema.virtual("items_count");
+
+virtual.get(function () {
+  const totalItem = this.order_items.reduce((prev, item) => {
+    return prev + parseInt(item.qty);
+  }, 0);
+
+  return totalItem;
+});
+
 module.exports = model("Order", orderSchema);

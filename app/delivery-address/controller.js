@@ -16,7 +16,7 @@ async function index(req, res, next) {
     const { limit = 10, skip = 0 } = req.query;
     const count = await DeliveryAddress.find({
       user: req.user._id,
-    }).countDocument();
+    }).countDocuments();
     const deliveryAddress = await DeliveryAddress.find({ user: req.user._id })
       .limit(parseInt(limit))
       .skip(parseInt(skip))

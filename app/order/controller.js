@@ -6,6 +6,43 @@ const DeliveryAddress = require("../delivery-address/model");
 const { policyFor } = require("../policy");
 const { subject } = require("@casl/ability");
 
+async function index(req, res, next) {
+  const policy = policyFor(req.user);
+
+  if (!policy.can("view", "Order")) {
+    return res.status(403).json({
+      error: 1,
+      message: `You're not allowed to perform this action`,
+    });
+  }
+
+  try {
+    const { limit = 10, skip = 0 } = req.query;
+    const count = await Order.find({ user: req.user._id }).countDocuments();
+    // sorting descending
+    const orders = await Order.find({ user: req.user._id })
+      .limit(parseInt(limit))
+      .skip(parseInt(skip))
+      .populate("order_items")
+      .sort("-createdAt");
+
+    // toJSON({virtuals:true}) dibutuhkan karena schema order memiliki field virtual jika tidak digunakan maka field tersebut tidak ada pada saat diubah menjadi json
+    return res.status(200).json({
+      data: orders.map((order) => order.toJSON({ virtuals: true })),
+      count,
+    });
+  } catch (err) {
+    if (err.name == "ValidationError") {
+      return res.json({
+        error: 1,
+        message: err.message,
+        fields: err.errors,
+      });
+    }
+    next(err);
+  }
+}
+
 async function store(req, res, next) {
   const policy = policyFor(req.user);
 
@@ -75,5 +112,6 @@ async function store(req, res, next) {
 }
 
 module.exports = {
+  index,
   store,
 };

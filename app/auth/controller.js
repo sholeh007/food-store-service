@@ -57,7 +57,7 @@ async function login(req, res, next) {
 
     if (!user) {
       return res
-        .status(404)
+        .status(401)
         .json({ error: 1, message: "email or password incorrect" });
     }
 

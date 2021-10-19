@@ -61,7 +61,7 @@ async function login(req, res, next) {
         .json({ error: 1, message: "email or password incorrect" });
     }
 
-    const signed = jwt.sign(user, config.secretKey);
+    const signed = jwt.sign(user, config.secretKey, { expiresIn: "1d" });
     await User.findOneAndUpdate(
       { _id: user._id },
       { $push: { token: signed } },

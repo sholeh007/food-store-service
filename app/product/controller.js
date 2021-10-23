@@ -8,13 +8,7 @@ const { policyFor } = require("../policy/index");
 
 async function index(req, res, next) {
   try {
-    const {
-      limit = 10,
-      skip = 0,
-      q = "",
-      category = "",
-      tags = [],
-    } = req.query;
+    let { limit = 10, skip = 0, q = "", category = "", tags = [] } = req.query;
     let criteria = {};
 
     // filter keyword
@@ -25,8 +19,7 @@ async function index(req, res, next) {
     // filter category
     if (category.length) {
       category = await Category.findOne({
-        name: { $regex: `${category}` },
-        $options: "i",
+        name: { $regex: `${category}`, $options: "i" },
       });
 
       if (category) {

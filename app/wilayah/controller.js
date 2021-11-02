@@ -64,7 +64,7 @@ async function getDesa(req, res, next) {
 
     if (!kode_induk) return res.json(data);
 
-    const desa = data.filter((desa) => desa.kode_kecamtan === kode_induk);
+    const desa = data.filter((desa) => desa.kode_kecamatan === kode_induk);
 
     return res.status(200).json(desa);
   } catch (err) {

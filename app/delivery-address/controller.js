@@ -46,13 +46,13 @@ async function store(req, res, next) {
   }
 
   try {
-    const payload = req.body;
+    const { payload } = req.body;
     const user = req.user;
 
     const address = new DeliveryAddress({ ...payload, user: user._id });
     await address.save();
 
-    return res.jsno(address);
+    return res.json(address);
   } catch (err) {
     if (err.name === "ValidationError") {
       return res.json({

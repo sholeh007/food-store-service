@@ -4,7 +4,6 @@ const OrderItem = require("../order-item/model");
 const CartItem = require("../cart-item/model");
 const DeliveryAddress = require("../delivery-address/model");
 const { policyFor } = require("../policy");
-const { subject } = require("@casl/ability");
 
 async function index(req, res, next) {
   const policy = policyFor(req.user);
